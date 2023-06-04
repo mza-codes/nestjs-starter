@@ -1,12 +1,23 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseEnumPipe } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export enum Role {
+    user = 'user',
+    guest = 'guest',
+    admin = 'admin',
+}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+@Controller('api/:role')
+export class AppController {
+    constructor(private readonly appService: AppService) {}
+
+    @Get()
+    getHello(@Param('role', new ParseEnumPipe(Role)) role: Role) {
+        return this.appService.displayMessage(role);
+    }
+
+    @Get('error')
+    throwErr() {
+        throw new Error('Manual Error Throw!');
+    }
 }
